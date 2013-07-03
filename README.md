@@ -11,7 +11,7 @@ API
     Trigger(description string) (incidentKey string, err error)
     TriggerIncidentKey(description, key string) (incidentKey string, err error)
     TriggerWithDetails(description string, details map[string]interface{}) (incidentKey string, err error)
-    TriggerIncidentKeyWithDetails(description string, details map[string]interface{}) (incidentKey string, err error)
+    TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error)
 
 Example
 -------

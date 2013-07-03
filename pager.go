@@ -28,8 +28,8 @@ func TriggerWithDetails(description string, details map[string]interface{}) (inc
 	return trigger(description, "", details)
 }
 
-func TriggerIncidentKeyWithDetails(description string, details map[string]interface{}) (incidentKey string, err error) {
-	return trigger(description, "", details)
+func TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error) {
+	return trigger(description, key, details)
 }
 
 func trigger(description, key string, details map[string]interface{}) (incidentKey string, err error) {
