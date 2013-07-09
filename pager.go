@@ -85,21 +85,5 @@ func errorFromResponse(resp *http.Response) (err error) {
 		return fmt.Errorf("PagerDuty request failed (%s) and an error occurred while reading the response body: %s", resp.Status, err.Error())
 	}
 
-	respBody := map[string]interface{}{}
-	err = json.Unmarshal(bodyBytes, &respBody)
-	if err != nil {
-		return fmt.Errorf("PagerDuty request failed (%s) and an error occurred while parsing the response body JSON: %s", resp.Status, err.Error())
-	}
-
-	respBodyError, ok := respBody["error"].(map[string]interface{})
-	if !ok {
-		return fmt.Errorf("PagerDuty request failed (%s) but the response JSON was missing the 'error' field.")
-	}
-
-	respBodyErrorMessage, ok := respBodyError["message"].(string)
-	if !ok {
-		return fmt.Errorf("PagerDuty request failed (%s) but the 'error.message' field was missing.")
-	}
-
-	return fmt.Errorf(respBodyErrorMessage)
+	return fmt.Errorf("PagerDuty request failed (%s): %s", resp.Status, string(bodyBytes))
 }
