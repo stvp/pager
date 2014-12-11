@@ -12,33 +12,29 @@ const (
 	ENDPOINT = "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
 )
 
-var (
-	ServiceKey = ""
-)
-
-func Trigger(description string) (incidentKey string, err error) {
-	return trigger(description, "", map[string]interface{}{})
+func Trigger(serviceKey string, description string) (incidentKey string, err error) {
+	return trigger(serviceKey, description, "", map[string]interface{}{})
 }
 
-func TriggerIncidentKey(description, key string) (incidentKey string, err error) {
-	return trigger(description, key, map[string]interface{}{})
+func TriggerIncidentKey(serviceKey string, description, key string) (incidentKey string, err error) {
+	return trigger(serviceKey, description, key, map[string]interface{}{})
 }
 
-func TriggerWithDetails(description string, details map[string]interface{}) (incidentKey string, err error) {
-	return trigger(description, "", details)
+func TriggerWithDetails(serviceKey string, description string, details map[string]interface{}) (incidentKey string, err error) {
+	return trigger(serviceKey, description, "", details)
 }
 
-func TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error) {
-	return trigger(description, key, details)
+func TriggerIncidentKeyWithDetails(serviceKey string, description, key string, details map[string]interface{}) (incidentKey string, err error) {
+	return trigger(serviceKey, description, key, details)
 }
 
-func trigger(description, key string, details map[string]interface{}) (incidentKey string, err error) {
-	if len(ServiceKey) == 0 {
+func trigger(serviceKey string, description, key string, details map[string]interface{}) (incidentKey string, err error) {
+	if len(serviceKey) == 0 {
 		return "", fmt.Errorf("pager.ServiceKey not set")
 	}
 
 	payload := map[string]interface{}{
-		"service_key": ServiceKey,
+		"service_key": serviceKey,
 		"event_type":  "trigger",
 		"description": description,
 		"details":     details,
