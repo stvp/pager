@@ -8,10 +8,10 @@ API
 
 [Go API Documentation][godocs]
 
-    Trigger(description string) (incidentKey string, err error)
-    TriggerIncidentKey(description, key string) (incidentKey string, err error)
-    TriggerWithDetails(description string, details map[string]interface{}) (incidentKey string, err error)
-    TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error)
+    Trigger(serviceKey string, description string) (incidentKey string, err error)
+    TriggerIncidentKey(serviceKey string, description, key string) (incidentKey string, err error)
+    TriggerWithDetails(serviceKey string, description string, details map[string]interface{}) (incidentKey string, err error)
+    TriggerIncidentKeyWithDetails(serviceKey string, description, key string, details map[string]interface{}) (incidentKey string, err error)
 
 Example
 -------
@@ -24,9 +24,8 @@ import (
 )
 
 func main() {
-  pager.ServiceKey = "a0d9345d0b041d12d702fa8c0cfe6516"
   // ...
-  incidentKey, err := pager.Trigger("Everything is on fire.")
+  incidentKey, err := pager.Trigger("a0d9345d0b041d12d702fa8c0cfe6516", "Everything is on fire.")
 }
 ```
 
