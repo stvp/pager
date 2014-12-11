@@ -3,15 +3,7 @@ pager
 
 `pager` is a Golang package for triggering [PagerDuty][pagerduty] incidents.
 
-API
----
-
 [Go API Documentation][godocs]
-
-    Trigger(description string) (incidentKey string, err error)
-    TriggerIncidentKey(description, key string) (incidentKey string, err error)
-    TriggerWithDetails(description string, details map[string]interface{}) (incidentKey string, err error)
-    TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error)
 
 Example
 -------
@@ -24,9 +16,13 @@ import (
 )
 
 func main() {
-  pager.ServiceKey = "a0d9345d0b041d12d702fa8c0cfe6516"
-  // ...
+  // Global useage
+  pager.ServiceKey = "3961B1F4AD08424C9DA704DEBCBBF8F3"
   incidentKey, err := pager.Trigger("Everything is on fire.")
+
+  // Individual endpoints
+  opsPager := pager.New("09D0A4B9B3F54047BCD7B65704A58333")
+  incidentKey, err = opsPager.Trigger("Server out of memory.")
 }
 ```
 
