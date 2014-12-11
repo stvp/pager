@@ -8,13 +8,19 @@ import (
 	"net/http"
 )
 
-const (
-	ENDPOINT = "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
-)
-
 var (
+	Endpoint   = "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
 	ServiceKey = ""
 )
+
+type Pager struct {
+	Endpoint   string
+	ServiceKey string
+}
+
+func New(serviceKey string) *Pager {
+	return &Pager{Endpoint, serviceKey}
+}
 
 func Trigger(description string) (incidentKey string, err error) {
 	return trigger(description, "", map[string]interface{}{})
@@ -33,12 +39,33 @@ func TriggerIncidentKeyWithDetails(description, key string, details map[string]i
 }
 
 func trigger(description, key string, details map[string]interface{}) (incidentKey string, err error) {
-	if len(ServiceKey) == 0 {
-		return "", fmt.Errorf("pager.ServiceKey not set")
+	p := Pager{Endpoint, ServiceKey}
+	return p.trigger(description, key, details)
+}
+
+func (p *Pager) Trigger(description string) (incidentKey string, err error) {
+	return p.trigger(description, "", map[string]interface{}{})
+}
+
+func (p *Pager) TriggerIncidentKey(description, key string) (incidentKey string, err error) {
+	return p.trigger(description, key, map[string]interface{}{})
+}
+
+func (p *Pager) TriggerWithDetails(description string, details map[string]interface{}) (incidentKey string, err error) {
+	return p.trigger(description, "", details)
+}
+
+func (p *Pager) TriggerIncidentKeyWithDetails(description, key string, details map[string]interface{}) (incidentKey string, err error) {
+	return p.trigger(description, key, details)
+}
+
+func (p *Pager) trigger(description, key string, details map[string]interface{}) (incidentKey string, err error) {
+	if len(p.ServiceKey) == 0 {
+		return "", fmt.Errorf("ServiceKey is not set")
 	}
 
 	payload := map[string]interface{}{
-		"service_key": ServiceKey,
+		"service_key": p.ServiceKey,
 		"event_type":  "trigger",
 		"description": description,
 		"details":     details,
@@ -52,7 +79,7 @@ func trigger(description, key string, details map[string]interface{}) (incidentK
 		return "", err
 	}
 
-	resp, err := http.Post(ENDPOINT, "application/json", bytes.NewReader(jsonPayload))
+	resp, err := http.Post(p.Endpoint, "application/json", bytes.NewReader(jsonPayload))
 	defer resp.Body.Close()
 
 	if err = errorFromResponse(resp); err != nil {
