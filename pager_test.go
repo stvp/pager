@@ -10,7 +10,7 @@ func TestServiceKey(t *testing.T) {
 
 	_, err := Trigger("TestServiceKey")
 	if err == nil {
-		t.Errorf("expected error, didn't get one")
+		t.Errorf("didn't get an error")
 	}
 }
 
@@ -19,7 +19,7 @@ func TestTrigger(t *testing.T) {
 
 	key, err := Trigger("TestTrigger")
 	if err != nil {
-		t.Errorf("got error: %s", err.Error())
+		t.Error(err)
 	}
 	if len(key) == 0 {
 		t.Errorf("didn't get an incident key back")
@@ -41,7 +41,7 @@ func TestTriggerWithDetails(t *testing.T) {
 	details := map[string]interface{}{"testing": true}
 	key, err := TriggerWithDetails("TestTriggerWithDetails", details)
 	if err != nil {
-		t.Errorf("got error: %s", err.Error())
+		t.Error(err)
 	}
 	if len(key) == 0 {
 		t.Errorf("didn't get an incident key back")
@@ -50,7 +50,7 @@ func TestTriggerWithDetails(t *testing.T) {
 	originalKey := key
 	key, err = TriggerIncidentKeyWithDetails("TestTriggerIncidentKeyWithDetails", originalKey, details)
 	if err != nil {
-		t.Errorf("got error: %s", err.Error())
+		t.Error(err)
 	}
 	if key != originalKey {
 		t.Errorf("expected %#v, got %#v", originalKey, key)
@@ -63,7 +63,7 @@ func TestPager(t *testing.T) {
 	p := New(os.Getenv("SERVICE_KEY"))
 	key, err := p.Trigger("TestPager")
 	if err != nil {
-		t.Errorf("got error: %s", err.Error())
+		t.Error(err)
 	}
 	if len(key) == 0 {
 		t.Errorf("didn't get an incident key back")

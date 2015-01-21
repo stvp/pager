@@ -59,58 +59,59 @@ func (p *Pager) TriggerIncidentKeyWithDetails(description, key string, details m
 	return p.trigger(description, key, details)
 }
 
-func (p *Pager) trigger(description, key string, details map[string]interface{}) (incidentKey string, err error) {
-	if len(p.ServiceKey) == 0 {
-		return "", fmt.Errorf("ServiceKey is not set")
-	}
-
-	payload := map[string]interface{}{
-		"service_key": p.ServiceKey,
-		"event_type":  "trigger",
-		"description": description,
-		"details":     details,
-	}
-	if len(key) > 0 {
-		payload["incident_key"] = key
-	}
-
-	jsonPayload, err := json.Marshal(payload)
+func (p *Pager) trigger(description, incidentKey string, details map[string]interface{}) (newIncidentKey string, err error) {
+	payload, err := triggerIncidentJSON(p.ServiceKey, description, incidentKey, details)
 	if err != nil {
 		return "", err
 	}
-
-	resp, err := http.Post(p.Endpoint, "application/json", bytes.NewReader(jsonPayload))
+	resp, err := http.Post(p.Endpoint, "application/json", bytes.NewReader(payload))
+	if err != nil {
+		return "", err
+	}
 	defer resp.Body.Close()
 
-	if err = errorFromResponse(resp); err != nil {
+	err = responseError(resp)
+	if err != nil {
 		return "", err
 	}
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("PagerDuty request was successful but an error occurred while reading the response body: %s", err.Error())
+		return "", err
 	}
 
 	respBody := map[string]string{}
 	err = json.Unmarshal(bodyBytes, &respBody)
 	if err != nil {
-		return "", fmt.Errorf("PagerDuty request was successful but an error occurred while parsing the response body JSON: %s", err.Error())
+		return "", err
 	}
 
 	return respBody["incident_key"], nil
 }
 
-// errorFromResponse returns an error with a helpful message if the given
-// PagerDuty response is an error response.
-func errorFromResponse(resp *http.Response) (err error) {
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+// -- Utils
+
+// triggerIncidentJSON builds the JSON payload for triggering a new PagerDuty
+// incident.
+func triggerIncidentJSON(serviceKey, description, incidentKey string, details map[string]interface{}) ([]byte, error) {
+	payload := map[string]interface{}{
+		"service_key": serviceKey,
+		"event_type":  "trigger",
+		"description": description,
+		"details":     details,
+	}
+	if len(incidentKey) > 0 {
+		payload["incident_key"] = incidentKey
+	}
+	return json.Marshal(payload)
+}
+
+// responseError returns an error if the given PagerDuty response is an error
+// response.
+func responseError(resp *http.Response) (err error) {
+	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusNoContent {
 		return nil
 	}
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("PagerDuty request failed (%s) and an error occurred while reading the response body: %s", resp.Status, err.Error())
-	}
-
-	return fmt.Errorf("PagerDuty request failed (%s): %s", resp.Status, string(bodyBytes))
+	body, _ := ioutil.ReadAll(resp.Body)
+	return fmt.Errorf("%s: %s", resp.Status, string(body))
 }
