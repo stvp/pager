@@ -12,7 +12,7 @@
 //
 // Including extra details:
 //
-//     pager.TriggerWithDetails("Oh no", map[string]string{
+//     pager.TriggerWithDetails("Oh no", map[string]interface{}{
 //         "cause": "it's a mystery",
 //         "responsible": "not me!",
 //    })
