@@ -8,18 +8,16 @@ import (
 	"net/http"
 )
 
-var (
-	Endpoint   = "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
-	ServiceKey = ""
-)
+const endpoint = "https://events.pagerduty.com/generic/2010-04-15/create_event.json"
+
+var ServiceKey = ""
 
 type Pager struct {
-	Endpoint   string
 	ServiceKey string
 }
 
 func New(serviceKey string) *Pager {
-	return &Pager{Endpoint, serviceKey}
+	return &Pager{serviceKey}
 }
 
 // -- Trigger
@@ -41,7 +39,7 @@ func TriggerIncidentKeyWithDetails(description string, key string, details map[s
 }
 
 func trigger(description string, key string, details map[string]interface{}) (newIncidentKey string, err error) {
-	p := Pager{Endpoint, ServiceKey}
+	p := Pager{ServiceKey}
 	return p.trigger(description, key, details)
 }
 
@@ -67,7 +65,7 @@ func (p *Pager) trigger(description string, incidentKey string, details map[stri
 		return "", err
 	}
 
-	respBody, err := sendPostRequestWithJSON(p.Endpoint, payload)
+	respBody, err := sendPostRequestWithJSON(endpoint, payload)
 	if err != nil {
 		return "", err
 	}
@@ -82,7 +80,7 @@ func ResolveIncidentKey(incidentKey string) (resp bool, err error) {
 }
 
 func resolve(incidentKey string) (resp bool, err error) {
-	p := Pager{Endpoint, ServiceKey}
+	p := Pager{ServiceKey}
 	return p.resolve(incidentKey)
 }
 
@@ -96,7 +94,7 @@ func (p *Pager) resolve(incidentKey string) (resp bool, err error) {
 		return false, err
 	}
 
-	respBody, err := sendPostRequestWithJSON(p.Endpoint, payload)
+	respBody, err := sendPostRequestWithJSON(endpoint, payload)
 	if err != nil {
 		return false, err
 	}
