@@ -82,8 +82,7 @@ func TestTriggerIncidentKeyWithDetails(t *testing.T) {
 func TestResolveIncidentKey(t *testing.T) {
 	ServiceKey = os.Getenv("SERVICE_KEY")
 
-	details := map[string]interface{}{"testing": true}
-	key, err := TriggerIncidentKeyWithDetails("TestTriggerIncidentKeyWithDetails", "TestKey", details)
+	key, err := Trigger("TestResolveIncidentKey")
 	if err != nil {
 		t.Error(err)
 	}
@@ -91,24 +90,8 @@ func TestResolveIncidentKey(t *testing.T) {
 		t.Errorf("didn't get an incident key back")
 	}
 
-	resp, err := ResolveIncidentKey(key)
+	err = ResolveIncidentKey(key)
 	if err != nil {
 		t.Error(err)
-	}
-	if resp != true {
-		t.Errorf("expected %#v, got %#v", true, resp)
-	}
-}
-
-func TestPager(t *testing.T) {
-	ServiceKey = ""
-
-	p := New(os.Getenv("SERVICE_KEY"))
-	key, err := p.Trigger("TestPager")
-	if err != nil {
-		t.Error(err)
-	}
-	if len(key) == 0 {
-		t.Errorf("didn't get an incident key back")
 	}
 }
