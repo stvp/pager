@@ -108,7 +108,7 @@ func (p *Pager) resolve(incidentKey string) (resp bool, err error) {
 
 // sendPostRequestWithJSON sends a POST request with a JSON Payload
 // to the specified endpoint
-func sendPostRequestWithJSON(endpoint string, payload []byte) (respBody map[string]string, err error) {
+func sendPostRequestWithJSON(endpoint string, payload []byte) (map[string]string, error) {
 	resp, err := http.Post(endpoint, "application/json", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func sendPostRequestWithJSON(endpoint string, payload []byte) (respBody map[stri
 
 // triggerIncidentJSON builds the JSON payload for triggering a new PagerDuty
 // incident.
-func triggerIncidentJSON(serviceKey string, description string, incidentKey string, details map[string]interface{}) (payload []byte, err error) {
+func triggerIncidentJSON(serviceKey string, description string, incidentKey string, details map[string]interface{}) ([]byte, error) {
 	payload := map[string]interface{}{
 		"service_key": serviceKey,
 		"event_type":  "trigger",
@@ -151,7 +151,7 @@ func triggerIncidentJSON(serviceKey string, description string, incidentKey stri
 
 // resolveIncidentJSON builds the JSON payload for resoling a PagerDuty
 // incident
-func resolveIncidentJSON(serviceKey string, incidentKey string) (payload []byte, err error) {
+func resolveIncidentJSON(serviceKey string, incidentKey string) ([]byte, error) {
 	payload := map[string]interface{}{
 		"service_key":  serviceKey,
 		"event_type":   "resolve",
